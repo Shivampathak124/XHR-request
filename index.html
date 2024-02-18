@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 1 and level 2  question</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #posts {
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .post {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .post-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .error-message {
+      color: #ff0000;
+    }
+       .add-post-link {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="posts">
+  <h1 href="index.html">Posts</h1>
+  <a href="add_post.html" class="add-post-link">Add a New Post</a>
+  <div id="post-list"></div>
+  <div id="error-message" class="error-message"></div>
+ 
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const postList = document.getElementById('post-list');
+    const errorMessage = document.getElementById('error-message');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://jsonplaceholder.typicode.com/posts', true);
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const posts = JSON.parse(xhr.responseText);
+        displayPosts(posts);
+      } else {
+        errorMessage.textContent = 'Failed to fetch posts. Please try again later.';
+      }
+    };
+
+    xhr.onerror = function () {
+      errorMessage.textContent = 'Network error. Please check your connection and try again.';
+    };
+
+    xhr.send();
+
+    function displayPosts(posts) {
+      posts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+
+        const titleElement = document.createElement('div');
+        titleElement.classList.add('post-title');
+        titleElement.textContent = post.title;
+
+        postDiv.appendChild(titleElement);
+        postList.appendChild(postDiv);
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

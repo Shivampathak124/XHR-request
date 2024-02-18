@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #posts {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .post {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .success-message {
+            color: #008000;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="posts">
+     <a href="index.html"><h1>POST</h1></a>
+        
+        <div id="post-list"></div>
+
+        <div class="form-container">
+            <h2>Add New Post</h2>
+            <form id="postForm">
+                <label for="postTitle">Title:</label>
+                <input type="text" id="postTitle" name="postTitle" required>
+
+                <label for="postBody">Body:</label>
+                <textarea id="postBody" name="postBody" rows="4" required></textarea>
+
+                <button type="submit">Submit</button>
+            </form>
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const postList = document.getElementById('post-list');
+            const postForm = document.getElementById('postForm');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            postForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const title = document.getElementById('postTitle').value;
+                const body = document.getElementById('postBody').value;
+
+                if (!title || !body) {
+                    errorMessage.textContent = 'Both title and body are required.';
+                    return;
+                }
+
+                errorMessage.textContent = '';
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://jsonplaceholder.typicode.com/posts', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        const newPost = JSON.parse(xhr.responseText);
+                        displayNewPost(newPost);
+                        successMessage.textContent = 'Post added successfully!';
+                        postForm.reset();
+                    } else {
+                        errorMessage.textContent = 'Failed to add post. Please try again later.';
+                    }
+                };
+
+                xhr.onerror = function () {
+                    errorMessage.textContent = 'Network error. Please check your connection and try again.';
+                };
+
+                const data = JSON.stringify({
+                    title: title,
+                    body: body
+                });
+
+                xhr.send(data);
+            });
+
+            function displayNewPost(post) {
+                const postDiv = document.createElement('div');
+                postDiv.classList.add('post');
+
+                const titleElement = document.createElement('div');
+                titleElement.classList.add('post-title');
+                titleElement.textContent = post.title;
+
+                postDiv.appendChild(titleElement);
+                postList.appendChild(postDiv);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
